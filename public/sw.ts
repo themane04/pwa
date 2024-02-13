@@ -24,44 +24,21 @@ const cacheClone = async (e) => {
     const res = await fetch(e.request)
     const resClone = res.clone()
 
-    const cache = await caches.open(getCache(e.request))
+    const cache = await caches.open('theOnlyCacheAvailable')
     await cache.put(e.request, resClone)
     return res
 }
 
-self.addEventListener('fetch', (e: FetchEvent) => {
-    if(isLiveApiContent(e.request)) {
-        return fetch(e.request)
-    }
+const fetchListener = () => {
+    self.addEventListener('fetch', (e: FetchEvent) => {
+        // TODO 1: If there is a live data request - never access the cache
+        // HINT: you can call fetch from the service worker
 
-    return e.respondWith(
-        cacheClone(e)
-        .catch(() => caches.match(e.request))
-        .then((res) => res)
-    )
-})
+        // TODO 2: Whenever the static content is called - store it in a specific cache
+        // HINT: send the response with "e.respondWIth"
+        // HINT: use the cacheClone helper function
 
-const getCache = (request: Request) => {
-    if(isStaticApiContent(request)) {
-        return 'list-content'
-    }
-    if(imageCache(request)) {
-        return 'picsum-images'
-    }
-    return 'app-shell'
+        // TODO 3: Identify the pictures an put those in a specific cache
+    })
 }
-
-const imageCache = (request: Request) => {
-    const hostname = new URL(request.url).hostname;
-    return hostname.includes('picsum.photos')
-}
-
-const isStaticApiContent = (request: Request) => {
-    const pathname = new URL(request.url).pathname;
-    return pathname.startsWith('/api/content')
-}
-
-const isLiveApiContent = (request: Request) => {
-    const pathname = new URL(request.url).pathname;
-    return pathname.startsWith('/api/live')
-}
+// fetchListener()

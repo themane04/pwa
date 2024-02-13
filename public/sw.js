@@ -61,7 +61,7 @@ var cacheClone = function (e) { return __awaiter(_this, void 0, void 0, function
             case 1:
                 res = _a.sent();
                 resClone = res.clone();
-                return [4 /*yield*/, caches.open(getCache(e.request))];
+                return [4 /*yield*/, caches.open('theOnlyCacheAvailable')];
             case 2:
                 cache = _a.sent();
                 return [4 /*yield*/, cache.put(e.request, resClone)];
@@ -71,31 +71,14 @@ var cacheClone = function (e) { return __awaiter(_this, void 0, void 0, function
         }
     });
 }); };
-self.addEventListener('fetch', function (e) {
-    if (isLiveApiContent(e.request)) {
-        return fetch(e.request);
-    }
-    return e.respondWith(cacheClone(e)["catch"](function () { return caches.match(e.request); })
-        .then(function (res) { return res; }));
-});
-var getCache = function (request) {
-    if (isStaticApiContent(request)) {
-        return 'list-content';
-    }
-    if (imageCache(request)) {
-        return 'picsum-images';
-    }
-    return 'app-shell';
+var fetchListener = function () {
+    self.addEventListener('fetch', function (e) {
+        // TODO 1: If there is a live data request - never access the cache
+        // HINT: you can call fetch from the service worker
+        // TODO 2: Whenever the static content is called - store it in a specific cache
+        // HINT: send the response with "e.respondWIth"
+        // HINT: use the cacheClone helper function
+        // TODO 3: Identify the pictures an put those in a specific cache
+    });
 };
-var imageCache = function (request) {
-    var hostname = new URL(request.url).hostname;
-    return hostname.includes('picsum.photos');
-};
-var isStaticApiContent = function (request) {
-    var pathname = new URL(request.url).pathname;
-    return pathname.startsWith('/api/content');
-};
-var isLiveApiContent = function (request) {
-    var pathname = new URL(request.url).pathname;
-    return pathname.startsWith('/api/live');
-};
+// fetchListener()
