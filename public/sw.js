@@ -71,16 +71,13 @@ var cacheClone = function (e) { return __awaiter(_this, void 0, void 0, function
         }
     });
 }); };
-var fetchEvent = function () {
-    self.addEventListener('fetch', function (e) {
-        if (isLiveApiContent(e.request)) {
-            return fetch(e.request);
-        }
-        return e.respondWith(cacheClone(e)["catch"](function () { return caches.match(e.request); })
-            .then(function (res) { return res; }));
-    });
-};
-fetchEvent();
+self.addEventListener('fetch', function (e) {
+    if (isLiveApiContent(e.request)) {
+        return fetch(e.request);
+    }
+    return e.respondWith(cacheClone(e)["catch"](function () { return caches.match(e.request); })
+        .then(function (res) { return res; }));
+});
 var getCache = function (request) {
     if (isStaticApiContent(request)) {
         return 'list-content';
